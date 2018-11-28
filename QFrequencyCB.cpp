@@ -13,8 +13,8 @@ void QFrequencyComboBox::getSaveData(QIniData &data) const
 
 void QFrequencyComboBox::loadSaveData(const QIniData &data)
 {
-	QStringList pires = data[KEY_PIRES].split(',');
-	QStringList freqs = data[KEY_FLIST].split(',');
+    QStringList pires = data[KEY_PIRES].split(',', QString::SkipEmptyParts);
+    QStringList freqs = data[KEY_FLIST].split(',', QString::SkipEmptyParts);
 
 	if( pires.count() != freqs.count() )
 	{
@@ -74,13 +74,14 @@ void QFrequencyComboBox::setPIREMap(const QPIREMap &pireMAP)
 {
 	m_PIREMap = pireMAP;
 	m_frequencyMap.clear();
-	QPIREMapIterator it(pireMAP);
+
+    QPIREMapIterator it(pireMAP);
 	while( it.hasNext() )
 	{
 		it.next();
-		foreach( QString freq, it.value() )
+        foreach( QString freq, it.frequencyList() )
 		{
-			m_frequencyMap[freq] = it.key();
+            m_frequencyMap[freq] = it.pire();
 		}
 	}
 	refreshItems();

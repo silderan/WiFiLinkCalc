@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     DlgConfig.cpp \
     QAntennaGainCB.cpp \
     QAntennaGainTable.cpp \
-    QFrequencyCB.cpp
+    QFrequencyCB.cpp \
+    QFrequencyTable.cpp
 
 HEADERS  += mainwindow.h \
     QIniFile.h \

@@ -5,7 +5,6 @@
 #include <FrequencyPIRE.h>
 #include <AntennaGain.h>
 
-#define FREQ_INC (5)
 namespace Ui
 {
 	class DlgConfig;
@@ -17,12 +16,6 @@ class DlgConfig : public QDialog
 	Ui::DlgConfig *ui;
 	QPIREMap m_PIREMap;
 	QAntennaGainMap m_AntennaGainMap;
-
-	void addPIRERow(int pire, int min, int max);
-	int pire(int row);
-	int freqMin(int row);
-	int freqMax(int row);
-	int freqInc(int row);
 
 public:
 	explicit DlgConfig(const QPIREMap &pireMap, const QAntennaGainMap &antGainMap, QWidget *parent = 0);

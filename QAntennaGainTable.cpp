@@ -6,20 +6,21 @@
 class QGainWidget : public QSpinBox
 {
 public:
-	QGainWidget(int gain, QWidget *papi = 0) : QSpinBox(papi)
+    QGainWidget(quint32 gain, QWidget *papi = nullptr) : QSpinBox(papi)
 	{
 		setRange(0, 100);
 		setGain(gain);
 		setSuffix(" dBi");
 	}
-	int gain() const { return value();	}
-	void setGain(int pire)	{ setValue(pire); }
+    quint32 gain() const    { return static_cast<quint32>(value()); }
+    void setGain(quint32 pire)	{ setValue(static_cast<int>(pire)); }
 };
 
-QAntennaGainTable::QAntennaGainTable(QWidget *parent) : QTableWidget(parent)
+QAntennaGainTable::QAntennaGainTable(QWidget *papi) :
+    QTableWidget(papi)
 {
 	setColumnCount(2);
-	setHorizontalHeaderLabels(QStringList()<<"Modelo"<<"Ganancia");
+    setHorizontalHeaderLabels( QStringList() << "Modelo" << "Ganancia");
 }
 
 QAntennaGainTable::~QAntennaGainTable()
@@ -29,7 +30,7 @@ QAntennaGainTable::~QAntennaGainTable()
 quint32 QAntennaGainTable::gain(int row) const
 {
 	if( (row < rowCount()) && (row >=0) )
-		return static_cast<QGainWidget*>(cellWidget(row, 1))->gain();
+        return static_cast<QGainWidget*>(cellWidget(row, 1))->gain();
 	return 0;
 }
 

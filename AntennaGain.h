@@ -23,7 +23,7 @@ class QAntennaGainCB : public QComboBox
 	Q_OBJECT
 
 public:
-	explicit QAntennaGainCB(QWidget *parent = 0);
+    explicit QAntennaGainCB(QWidget *papi = nullptr);
 	~QAntennaGainCB();
 
 	void getSaveData(QIniData &data) const;
@@ -48,7 +48,7 @@ class QAntennaGainTable : public QTableWidget
 	Q_OBJECT
 
 public:
-	explicit QAntennaGainTable(QWidget *parent = 0);
+    explicit QAntennaGainTable(QWidget *papi = nullptr);
 	~QAntennaGainTable();
 
 	quint32 gain(const QString &model) const;

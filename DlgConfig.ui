@@ -31,7 +31,7 @@
       </widget>
      </item>
      <item row="1" column="0" colspan="2">
-      <widget class="QTableWidget" name="pireTable"/>
+      <widget class="QFrequencyTable" name="pireTable"/>
      </item>
     </layout>
    </item>
@@ -79,6 +79,11 @@
    <slots>
     <slot>addRow()</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>QFrequencyTable</class>
+   <extends>QTableWidget</extends>
+   <header>FrequencyPIRE.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -4,7 +4,7 @@
 #define KEY_ANTGAIN ("ANT-GAINS")
 #define KEY_ANTCURR	("ANT_CURRE")
 
-QAntennaGainCB::QAntennaGainCB(QWidget *parent) : QComboBox(parent)
+QAntennaGainCB::QAntennaGainCB(QWidget *papi) : QComboBox(papi)
 {
 	connect( this, SIGNAL(currentIndexChanged(int)), this, SLOT(onIndexChanged(int)) );
 }
@@ -45,7 +45,7 @@ QAntennaGainMap QAntennaGainCB::antennaGainMap() const
 {
 	QAntennaGainMap rtn;
 	for( int i = 0; i < count(); i++ )
-		rtn[itemText(i)] = itemData(i).toInt();
+        rtn[itemText(i)] = itemData(i).toUInt();
 	return rtn;
 }
 
@@ -69,5 +69,5 @@ void QAntennaGainCB::setAntennaGainMap(const QAntennaGainMap &antGainMap)
 
 void QAntennaGainCB::onIndexChanged(int index)
 {
-	emit gainChanged( itemData(index).toInt() );
+    emit gainChanged( itemData(index).toUInt() );
 }
