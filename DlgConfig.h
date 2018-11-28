@@ -2,7 +2,7 @@
 #define DLGCONFIG_H
 
 #include <QDialog>
-#include <QFrequencyComboBox.h>
+#include <FrequencyPIRE.h>
 #include <AntennaGain.h>
 
 #define FREQ_INC (5)

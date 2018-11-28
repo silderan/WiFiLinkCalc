@@ -1,5 +1,5 @@
-#ifndef QFREQUENCYCOMBOBOX_H
-#define QFREQUENCYCOMBOBOX_H
+#ifndef FREQUENCYPIRE
+#define FREQUENCYPIRE
 
 #include <QStringList>
 #include <QComboBox>
@@ -43,4 +43,4 @@ public slots:
 	void setPIREMap( const QPIREMap &pireMAP );
 };
 
-#endif // QFREQUENCYCOMBOBOX_H
+#endif // FREQUENCYPIRE

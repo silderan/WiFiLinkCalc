@@ -14,17 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    QFrequencyComboBox.cpp \
     QIniFile.cpp \
     DlgConfig.cpp \
     QAntennaGainCB.cpp \
-    QAntennaGainTable.cpp
+    QAntennaGainTable.cpp \
+    QFrequencyCB.cpp
 
 HEADERS  += mainwindow.h \
-    QFrequencyComboBox.h \
     QIniFile.h \
     DlgConfig.h \
-    AntennaGain.h
+    AntennaGain.h \
+    FrequencyPIRE.h
 
 FORMS    += mainwindow.ui \
     DlgConfig.ui

@@ -161,7 +161,7 @@
   <customwidget>
    <class>QFrequencyComboBox</class>
    <extends>QComboBox</extends>
-   <header>QFrequencyComboBox.h</header>
+   <header>FrequencyPIRE.h</header>
   </customwidget>
   <customwidget>
    <class>QAntennaGainCB</class>

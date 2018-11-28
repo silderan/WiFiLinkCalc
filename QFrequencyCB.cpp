@@ -1,4 +1,4 @@
-#include "QFrequencyComboBox.h"
+#include "FrequencyPIRE.h"
 
 #define KEY_PIRES	("PIRES")
 #define KEY_FLIST	("freq-list")
