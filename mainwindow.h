@@ -17,25 +17,24 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 	Ui::MainWindow *ui;
-    QIniData m_cnfgData;
 
     QFrequencyPireList m_freqPIREList;
     QAntennaDataList m_antDataList;
     quint32 m_freqStep;
 
-    void loadPIREData();
-    void savePIREData();
+	void loadPIREData(const QIniData &cnfgData);
+	void savePIREData(QIniData &cnfgData)const;
 
-    void loadAntennaData();
-    void saveAntennaData();
+	void loadAntennaData(const QIniData &cnfgData);
+	void saveAntennaData(QIniData &cnfgData) const;
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+	explicit MainWindow(QWidget *parent = Q_NULLPTR);
 	~MainWindow();
 
 private slots:
     void loadAll();
-    void saveAll();
+	void saveAll() const;
 	void onNewPIRE(int pire);
     void onNewAPGain(quint32 gain);
     void onNewClGain(quint32 gain);

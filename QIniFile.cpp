@@ -22,6 +22,18 @@
 
 #include <QFile>
 
+QString QIniFile::fullPath(const QString &file, QIniFile::TargetDir targetDir)
+{
+	switch( targetDir )
+	{
+	case QIniFile::FullPathDir:
+	case QIniFile::CurrentDir:		return file;
+	case QIniFile::UserDocuments:	return QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), file);
+	case QIniFile::UserDesktop:		return QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), file);
+	}
+	return file;
+}
+
 /**
  * @brief QIniFile::load
  * Loads a ini-like file and places all data into data map.
@@ -33,9 +45,9 @@
  * @param data The data mapping to store data readed from file.
  * @return false if cannot open file to read.
  */
-bool QIniFile::load(const QString &file, QIniData *data)
+bool QIniFile::load(const QString &file, QIniData *data, TargetDir targetDir)
 {
-	QFile f(file);
+	QFile f(fullPath(file, targetDir));
 	if( f.open(QIODevice::ReadOnly) )
 	{
 		QByteArray linea;
@@ -59,9 +71,9 @@ bool QIniFile::load(const QString &file, QIniData *data)
  * @param data The data mappig to store on file.
  * @return false on error opening file or cannot write all data on file.
  */
-bool QIniFile::save(const QString &file, const QIniData &data)
+bool QIniFile::save(const QString &file, const QIniData &data, TargetDir targetDir)
 {
-	QFile f(file);
+	QFile f(fullPath(file, targetDir));
 	if( f.open(QIODevice::WriteOnly) )
 	{
 		QMap<QString, QString>::const_iterator i;

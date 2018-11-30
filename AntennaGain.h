@@ -45,7 +45,7 @@ class QAntennaGainCB : public QComboBox
     Q_OBJECT
 
 public:
-    explicit QAntennaGainCB(QWidget *papi = nullptr);
+    explicit QAntennaGainCB(QWidget *papi = Q_NULLPTR);
 	~QAntennaGainCB();
 
 	QString model(int index) const	{ return itemText(index);	}
@@ -69,7 +69,7 @@ class QAntennaGainTable : public QTableWidget
 	Q_OBJECT
 
 public:
-    explicit QAntennaGainTable(QWidget *papi = nullptr);
+    explicit QAntennaGainTable(QWidget *papi = Q_NULLPTR);
 	~QAntennaGainTable();
 
 	quint32 gain(const QString &model) const;

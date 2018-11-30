@@ -6,7 +6,7 @@
 class QGainWidget : public QSpinBox
 {
 public:
-    QGainWidget(quint32 gain, QWidget *papi = nullptr) : QSpinBox(papi)
+    QGainWidget(quint32 gain, QWidget *papi = Q_NULLPTR) : QSpinBox(papi)
 	{
 		setRange(0, 100);
 		setGain(gain);

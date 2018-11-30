@@ -16,7 +16,7 @@ class DlgConfig : public QDialog
 	Ui::DlgConfig *ui;
 
 public:
-    explicit DlgConfig(const QFrequencyPireList &freqPIREList, const QAntennaDataList &antDataList, quint32 freqStep, QWidget *parent = nullptr);
+	explicit DlgConfig(const QFrequencyPireList &freqPIREList, const QAntennaDataList &antDataList, quint32 freqStep, QWidget *parent = Q_NULLPTR);
 	~DlgConfig();
 
     QFrequencyPireList frequencyPIREList() const;

@@ -54,7 +54,7 @@ public:
 class QPireWidget : public QSpinBox
 {
 public:
-    QPireWidget(int pire, QWidget *papi = nullptr) : QSpinBox(papi)
+	QPireWidget(int pire, QWidget *papi = Q_NULLPTR) : QSpinBox(papi)
     {
         setRange(0, 100);
         setPire(pire);
@@ -67,10 +67,10 @@ public:
 class QFreqWidget : public QSpinBox
 {
 public:
-    QFreqWidget(QWidget *papi = nullptr ) : QSpinBox(papi)
+	QFreqWidget(QWidget *papi = Q_NULLPTR ) : QSpinBox(papi)
     {   }
     template <class T>
-    QFreqWidget(T freq, QWidget *papi = nullptr ) : QSpinBox(papi)
+	QFreqWidget(T freq, QWidget *papi = Q_NULLPTR ) : QSpinBox(papi)
     {
         setRange(0, 6000);
         setFrequency(freq);
@@ -88,7 +88,7 @@ class QFrequencyComboBox : public QComboBox
     quint32 m_freqStep; // The Mhz to create all available selectable frequencies in combo box.
 
 public:
-    explicit QFrequencyComboBox(QWidget *parent = nullptr);
+	explicit QFrequencyComboBox(QWidget *parent = Q_NULLPTR);
 	~QFrequencyComboBox();
 
     int pire(int index) const           { return ((index >= 0) && (index < count())) ? itemData(index).toInt() : 0; }
@@ -113,7 +113,7 @@ signals:
 class QFrequencyTable : public QTableWidget
 {
 public:
-    QFrequencyTable(QWidget *papi = nullptr);
+	QFrequencyTable(QWidget *papi = Q_NULLPTR);
 
     void load(const QFrequencyPireList &freqPIREList);
     QFrequencyPireList save() const;

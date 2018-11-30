@@ -22,14 +22,23 @@
 #define QINIFILE_H
 
 #include <QMap>
+#include <QStandardPaths>
 
 typedef QMap<QString, QString> QIniData;
 
 class QIniFile
 {
 public:
-	static bool load(const QString &file, QIniData *data);
-	static bool save(const QString &file, const QIniData &data);
+	enum TargetDir
+	{
+		FullPathDir,
+		CurrentDir,
+		UserDocuments,
+		UserDesktop
+	};
+	static QString fullPath(const QString &file, TargetDir targetDir);
+	static bool load(const QString &file, QIniData *data, TargetDir targetDir = CurrentDir);
+	static bool save(const QString &file, const QIniData &data, TargetDir targetDir = CurrentDir);
 };
 
 #endif // QINIFILE_H
