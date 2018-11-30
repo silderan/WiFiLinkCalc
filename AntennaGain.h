@@ -7,38 +7,59 @@
 
 #include "QIniFile.h"
 
-typedef QMap<QString, quint32> QAntennaGainMap;
+class AntennaData
+{
+    QString m_modelName;
+    quint32 m_gain;
+public:
+    AntennaData() :
+        m_gain(0)
+    {   }
+    AntennaData(const QString modelName, quint32 gain) :
+        m_modelName(modelName),
+        m_gain(gain)
+    {   }
 
-class QAntennaGainMapIterator : public QMapIterator<QString, quint32>
+    QString modelName() const                   { return m_modelName;   }
+    void setModelName(const QString &modelName) { m_modelName = modelName;  }
+
+    quint32 gain()const                 { return m_gain;    }
+    void setGain(const quint32 &gain)   { m_gain = gain;    }
+};
+
+class QAntennaDataList : public QList<AntennaData>
 {
 public:
-	QAntennaGainMapIterator(const QAntennaGainMap &map) : QMapIterator(map)
-	{	}
-	const QString name() const	{ return key();		}
-	quint32 gain() const		{ return value();	}
+    void append(const AntennaData &ad)
+    {
+        QList::append( ad );
+    }
+    void append(const QString &modelName, quint32 gain)
+    {
+        QList::append( AntennaData(modelName, gain) );
+    }
 };
 
 class QAntennaGainCB : public QComboBox
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
     explicit QAntennaGainCB(QWidget *papi = nullptr);
 	~QAntennaGainCB();
-
-	void getSaveData(QIniData &data) const;
-	void loadSaveData(const QIniData &data);
 
 	QString model(int index) const	{ return itemText(index);	}
 	QString currentModel() const	{ return currentText();	}
 	quint32 gain(int index) const	{ return itemData(index).toUInt();	}
 	quint32 currentGain() const		{ return itemData(currentIndex()).toUInt();	}
 
-	QAntennaGainMap antennaGainMap()const;
-	void setAntennaGainMap(const QAntennaGainMap &antGainMap);
+    void load(const QAntennaDataList &antDataList, const QString newAntenaModel = QString() );
+
 signals:
 	void gainChanged(quint32);
 
+public slots:
+    void selectAntenaModel(const QString &antennaModel);
 private slots:
 	void onIndexChanged(int);
 };
@@ -56,12 +77,15 @@ public:
 	QString model(int row) const;
 
 public slots:
-	void addRow(const QString &model = QString(), quint32 gain = 0);
-	void fromMap(const QAntennaGainMap &map);
-	bool toMap(QAntennaGainMap &map) const;
+    void addRow(const QString &antenaModel = QString(), quint32 gain = 0);
+    void addRow(const AntennaData &antData)
+        {   addRow(antData.modelName(), antData.gain());    }
+    void load(const QAntennaDataList &antDataList);
+    QAntennaDataList save() const;
 
 signals:
-	void error(const QString &context, const QString &desc) const;
+    void gainChanged(quint32 gain);
 };
 
 #endif // ANTENNAGAIN_H
+

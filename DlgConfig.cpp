@@ -1,66 +1,88 @@
 #include "DlgConfig.h"
 #include "ui_DlgConfig.h"
 
-#include <QSpinBox>
-
-DlgConfig::DlgConfig(const QPIREMap &pireMap, const QAntennaGainMap &antGainMap, QWidget *parent) :
-	QDialog(parent), ui(new Ui::DlgConfig),
-	m_PIREMap(pireMap)
+DlgConfig::DlgConfig(const QFrequencyPireList &freqPIREList,
+                     const QAntennaDataList &antDataList,
+                     quint32 freqStep,
+                     QWidget *parent) :
+    QDialog(parent), ui(new Ui::DlgConfig)
 {
 	ui->setupUi(this);
 
-    ui->pireTable->fromPIREMap(pireMap);
-	ui->gainTable->fromMap(antGainMap);
+    ui->sbSteps->setValue(static_cast<int>(freqStep));
+    ui->sbSteps->setMinimum(1);
+    ui->pireTable->load(freqPIREList);
+    ui->gainTable->load(antDataList);
 }
 
 DlgConfig::~DlgConfig()
 {
-	delete ui;
+    delete ui;
+}
+
+QFrequencyPireList DlgConfig::frequencyPIREList() const
+{
+    return ui->pireTable->save();
+}
+
+quint32 DlgConfig::frequencyStep()
+{
+    return static_cast<quint32>(ui->sbSteps->value());
+}
+
+QAntennaDataList DlgConfig::antennaDataList() const
+{
+    return ui->gainTable->save();
 }
 
 #include <QMessageBox>
-#define SHOWWARNING(_t) QMessageBox::warning(this, this->windowTitle(), _t)
+#define SHOWWARNING(_t) QMessageBox::warning(this, QString("%1 [%2]").arg(this->windowTitle(), __FUNCTION__), _t)
 
 void DlgConfig::on_btOk_clicked()
 {
-	int row;
-	int min, max;
-	int pir;
+    bool bAllOk = true;
 
-	m_PIREMap.clear();
-	for( row = 0; row < ui->pireTable->rowCount(); row++ )
+    // Lets check if all data is fine.
+    for( int row = 0; row < ui->pireTable->rowCount(); row++ )
 	{
-        pir = ui->pireTable->pire(row);
-		if( pir > 0 )
+        if( ui->pireTable->pire(row) > 0 )
 		{
-            if( (min = ui->pireTable->freqMin(row)) % FREQ_INC )
+            if( (ui->pireTable->iniFrequency(row)) % static_cast<quint32>(ui->sbSteps->value()) )
 			{
-				SHOWWARNING( tr("Las frecuencias han de ser múltimplo de %1.\nLa frecuencia mínima %2 para el PIRE %3 no lo es.").arg(FREQ_INC).arg(min).arg(pir));
-				return;
+                SHOWWARNING( tr("Las frecuencias han de ser múltiplo de %1.\nLa frecuencia mínima %2 para el PIRE %3 no lo es.")
+                             .arg(ui->sbSteps->value())
+                             .arg(ui->pireTable->iniFrequency(row))
+                             .arg(ui->pireTable->pire(row)));
+                bAllOk = false;
+                continue;
 			}
-            if( (max = ui->pireTable->freqMax(row)) % FREQ_INC )
+            if( (ui->pireTable->endFrequency(row)) % static_cast<quint32>(ui->sbSteps->value()) )
 			{
-				SHOWWARNING( tr("Las frecuencias han de ser múltimplo de %1.\nLa frecuencia máxima %2 para el PIRE %3 no lo es.").arg(FREQ_INC).arg(max).arg(pir));
-				return;
-			}
-			if( max < min )
+                SHOWWARNING( tr("Las frecuencias han de ser múltiplo de %1.\nLa frecuencia máxima %2 para el PIRE %3 no lo es.")
+                             .arg(ui->sbSteps->value())
+                             .arg(ui->pireTable->iniFrequency(row))
+                             .arg(ui->pireTable->pire(row)));
+                bAllOk = false;
+                continue;
+            }
+            if( ui->pireTable->endFrequency(row) < ui->pireTable->iniFrequency(row) )
 			{
-				SHOWWARNING( tr("En el PIRE %1, la frecuencia máxima es menor que la mínima.").arg(pir) );
-				return;
-			}
-			while( min <= max )
-			{
-				m_PIREMap[QString("%1").arg(pir)].append(QString("%1").arg(min));
-				min += FREQ_INC;
-			}
+                SHOWWARNING( tr("En el PIRE %1, la frecuencia máxima es menor que la mínima.").arg(ui->pireTable->pire(row)) );
+                bAllOk = false;
+                continue;
+            }
 		}
 	}
-	m_AntennaGainMap.clear();
-	if( ui->gainTable->toMap(m_AntennaGainMap) )
-		accept();
+    if( bAllOk )
+        accept();
 }
 
 void DlgConfig::on_addPIREButton_clicked()
 {
-    ui->pireTable->addRow(0, 0, 0);
+    ui->pireTable->addRow();
+}
+
+void DlgConfig::on_addModelGain_clicked()
+{
+    ui->gainTable->addRow();
 }

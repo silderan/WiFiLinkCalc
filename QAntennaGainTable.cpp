@@ -49,38 +49,27 @@ quint32 QAntennaGainTable::gain(const QString &modelName) const
 	return 0;
 }
 
-void QAntennaGainTable::addRow(const QString &modelName, quint32 gain)
+void QAntennaGainTable::addRow(const QString &antenaModel, quint32 gain)
 {
 	int row = rowCount();
 	insertRow(row);
-	setItem(row, 0, new QTableWidgetItem(modelName) );
+    setItem(row, 0, new QTableWidgetItem(antenaModel) );
 	setCellWidget(row, 1, new QGainWidget(gain) );
 }
 
-void QAntennaGainTable::fromMap(const QAntennaGainMap &map)
+void QAntennaGainTable::load(const QAntennaDataList &antDataList)
 {
-	QAntennaGainMapIterator it(map);
 	clear();
-	while( it.hasNext() )
-	{
-		it.next();
-		addRow(it.name(), it.gain());
-	}
+    for( int i = 0; i < antDataList.count(); i++ )
+        addRow(antDataList[i]);
 }
 
-bool QAntennaGainTable::toMap(QAntennaGainMap &map) const
+QAntennaDataList QAntennaGainTable::save() const
 {
+    QAntennaDataList antDataList;
 	for( int row = 0; row < rowCount(); row++ )
-	{
-		if( !model(row).isEmpty() )
-		{
-			if( gain(row) <= 0 )
-			{
-				emit error( tr("Guardando datos de ganancia de las antenas"), tr("La ganancia de la antena del modelo %1 no es válido").arg(model(row)) );
-				return false;
-			}
-			map[model(row)] = gain(row);
-		}
-	}
-	return true;
+        if( !model(row).isEmpty() && (gain(row) > 0) )
+            antDataList.append( model(row), gain(row) );
+
+    return antDataList;
 }

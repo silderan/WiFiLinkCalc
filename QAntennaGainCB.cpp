@@ -1,9 +1,5 @@
 #include "AntennaGain.h"
 
-#define KEY_ANTMODL	("ANT-MODLS")
-#define KEY_ANTGAIN ("ANT-GAINS")
-#define KEY_ANTCURR	("ANT_CURRE")
-
 QAntennaGainCB::QAntennaGainCB(QWidget *papi) : QComboBox(papi)
 {
 	connect( this, SIGNAL(currentIndexChanged(int)), this, SLOT(onIndexChanged(int)) );
@@ -14,60 +10,29 @@ QAntennaGainCB::~QAntennaGainCB()
 
 }
 
-void QAntennaGainCB::getSaveData(QIniData &data) const
+void QAntennaGainCB::load(const QAntennaDataList &antDataList, const QString newAntenaModel)
 {
-	QStringList antModls;
-	QStringList antGains;
-
-	for( int i = 0; i < count(); i++ )
-	{
-		antModls.append(model(i));
-		antGains.append(QString("%1").arg(gain(i)));
-	}
-	data[KEY_ANTCURR] = currentModel();
-	data[KEY_ANTGAIN] = antGains.join(',');
-	data[KEY_ANTMODL] = antModls.join(',');
-}
-
-void QAntennaGainCB::loadSaveData(const QIniData &data)
-{
-	QAntennaGainMap antGainMap;
-	QStringList antModls = data[KEY_ANTMODL].split(',');
-	QStringList antGains = data[KEY_ANTGAIN].split(',');
-
-	for( int i = 0; i < antModls.count(); i++ )
-		antGainMap[antModls[i]] = antGains[i].toUInt();
-
-	setAntennaGainMap(antGainMap);
-}
-
-QAntennaGainMap QAntennaGainCB::antennaGainMap() const
-{
-	QAntennaGainMap rtn;
-	for( int i = 0; i < count(); i++ )
-        rtn[itemText(i)] = itemData(i).toUInt();
-	return rtn;
-}
-
-void QAntennaGainCB::setAntennaGainMap(const QAntennaGainMap &antGainMap)
-{
-	QAntennaGainMapIterator it(antGainMap);
 	blockSignals(true);
-	QString oldModel = currentModel();
+    QString oldModel = newAntenaModel.isEmpty() ? currentModel() : newAntenaModel;
 	clear();
 
-	while( it.hasNext() )
-	{
-		it.next();
-		addItem(it.key(), it.value());
-	}
+    for( int i = 0; i < antDataList.count(); i++ )
+        addItem(antDataList[i].modelName(), antDataList[i].gain());
 
-	setCurrentIndex(findText(oldModel));
 	blockSignals(false);
-	onIndexChanged(currentIndex());
+    selectAntenaModel(oldModel);
+    if( (currentIndex() == -1) && count() )
+        setCurrentIndex(0);
 }
 
-void QAntennaGainCB::onIndexChanged(int index)
+void QAntennaGainCB::selectAntenaModel(const QString &antennaModel)
 {
-    emit gainChanged( itemData(index).toUInt() );
+    setCurrentIndex( findText(antennaModel) );
+}
+
+void QAntennaGainCB::onIndexChanged(int /*index*/)
+{
+    static quint32 oldGain = 0;
+    if( oldGain != currentGain() )
+        emit gainChanged( currentGain() );
 }

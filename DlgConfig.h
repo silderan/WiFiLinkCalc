@@ -14,19 +14,19 @@ class DlgConfig : public QDialog
 {
 	Q_OBJECT
 	Ui::DlgConfig *ui;
-	QPIREMap m_PIREMap;
-	QAntennaGainMap m_AntennaGainMap;
 
 public:
-	explicit DlgConfig(const QPIREMap &pireMap, const QAntennaGainMap &antGainMap, QWidget *parent = 0);
+    explicit DlgConfig(const QFrequencyPireList &freqPIREList, const QAntennaDataList &antDataList, quint32 freqStep, QWidget *parent = nullptr);
 	~DlgConfig();
 
-	const QPIREMap &pireMAP() const					{ return m_PIREMap;	}
-	const QAntennaGainMap &antennaGainMap() const	{ return m_AntennaGainMap;	}
+    QFrequencyPireList frequencyPIREList() const;
+    quint32 frequencyStep();
+    QAntennaDataList antennaDataList() const;
 
 private slots:
 	void on_btOk_clicked();
 	void on_addPIREButton_clicked();
+    void on_addModelGain_clicked();
 };
 
 #endif // DLGCONFIG_H
