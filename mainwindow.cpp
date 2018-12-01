@@ -34,11 +34,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->addAction( cnfgAction );
 
 	cnfgAction = new QAction(this);
-    cnfgAction->setShortcut( QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_S) );
-    connect( cnfgAction, SIGNAL(triggered()), this, SLOT(saveAll()) );
-    this->addAction( cnfgAction );
-
-	cnfgAction = new QAction(this);
     cnfgAction->setShortcut( QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_L) );
     connect( cnfgAction, SIGNAL(triggered()), this, SLOT(loadAll()) );
     this->addAction( cnfgAction );
@@ -55,41 +50,41 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    saveAll();
+	saveUserData();
     delete ui;
 }
 
-void MainWindow::loadAll()
-{
-	QIniData cnfgData;
-	QIniFile::load(CONFIG_FNAME, &cnfgData, QIniFile::UserDocuments);
-	loadPIREData(cnfgData);
-	m_freqStep = cnfgData[KEY_FSTEP].toUInt();
-	ui->cbFrecuencia->load(m_freqPIREList, m_freqStep, cnfgData[KEY_CURFR]);
-
-	loadAntennaData(cnfgData);
-	ui->cbAPModel->load(m_antDataList, cnfgData[KEY_ANTAP]);
-	ui->cbClModel->load(m_antDataList, cnfgData[KEY_ANTCL]);
-
-	ui->sbPIRE->setValue( cnfgData[KEY_PIRE].toInt() );
-	ui->sbDistance->setValue( cnfgData[KEY_DIST].toInt() );
-}
-
-void MainWindow::saveAll() const
+void MainWindow::saveUserData() const
 {
 	QIniData cnfgData;
 
-	savePIREData(cnfgData);
-	cnfgData[KEY_FSTEP] = QString("%1").arg(ui->cbFrecuencia->frequencyStep());
 	cnfgData[KEY_CURFR] = ui->cbFrecuencia->currentFrequency();
 	cnfgData[KEY_PIRE] = QString("%1").arg(ui->sbPIRE->value());
 	cnfgData[KEY_DIST] = QString("%1").arg(ui->sbDistance->value());
 
-	saveAntennaData(cnfgData);
-	cnfgData[KEY_ANTAP] = ui->cbAPModel->currentModel();
-	cnfgData[KEY_ANTCL] = ui->cbClModel->currentModel();
+	cnfgData[KEY_ANTAP] = ui->cbAPModel->currentModelName();
+	cnfgData[KEY_ANTCL] = ui->cbClModel->currentModelName();
 
 	QIniFile::save(CONFIG_FNAME, cnfgData, QIniFile::UserDocuments);
+}
+
+void MainWindow::loadAll()
+{
+	QIniData userData;
+	QIniData glblData;
+	QIniFile::load(CONFIG_FNAME, &userData, QIniFile::UserDocuments);
+	QIniFile::load(CONFIG_FNAME, &glblData, QIniFile::CurrentDir);
+
+	loadPIREData(glblData);
+	loadAntennaData(glblData);
+	m_freqStep = glblData[KEY_FSTEP].toUInt();
+
+	ui->cbFrecuencia->setup( m_freqPIREList, m_freqStep, userData[KEY_CURFR] );
+	ui->cbAPModel->setup( m_antDataList, userData[KEY_ANTAP] );
+	ui->cbClModel->setup( m_antDataList, userData[KEY_ANTCL] );
+
+	ui->sbPIRE->setValue( userData[KEY_PIRE].toInt() );
+	ui->sbDistance->setValue( userData[KEY_DIST].toInt() );
 }
 
 void MainWindow::loadPIREData(const QIniData &cnfgData)
@@ -97,7 +92,7 @@ void MainWindow::loadPIREData(const QIniData &cnfgData)
     QString frequencyPIREDataString;
 
     bool ok;
-    m_freqPIREList.clear();
+	m_freqPIREList.clear();
 	for( int line = 1; !(frequencyPIREDataString = cnfgData[ KEY_FREQ(line) ]).isEmpty(); line++ )
     {
         QStringList freqPIREDataStringList = frequencyPIREDataString.split(',', QString::SkipEmptyParts);
@@ -136,21 +131,9 @@ void MainWindow::loadPIREData(const QIniData &cnfgData)
                              .arg(freqPIREDataStringList[2]));
                 continue;
             }
-            m_freqPIREList.append(frequencyPIREData);
+			m_freqPIREList.append(frequencyPIREData);
         }
     }
-}
-
-void MainWindow::savePIREData(QIniData &cnfgData) const
-{
-    for( int i = 0; i < m_freqPIREList.count(); i++ )
-    {
-		cnfgData[ KEY_FREQ(i+1) ] = QString("%1,%2,%3")
-                                    .arg(m_freqPIREList[i].initialFrequency())
-                                    .arg(m_freqPIREList[i].endFrequency())
-                                    .arg(m_freqPIREList[i].frequencyPIRE());
-    }
-	cnfgData[ KEY_CURFR ] = QString("%1").arg(ui->cbFrecuencia->currentFrequency());
 }
 
 void MainWindow::loadAntennaData(const QIniData &cnfgData)
@@ -158,7 +141,7 @@ void MainWindow::loadAntennaData(const QIniData &cnfgData)
     QString antennaDataString;
 
     bool ok;
-    m_antDataList.clear();
+	m_antDataList.clear();
 	for( int line = 1; !(antennaDataString = cnfgData[ KEY_ANT(line) ]).isEmpty(); line++ )
     {
         QStringList antennaDataStringList = antennaDataString.split(',', QString::SkipEmptyParts);
@@ -180,15 +163,9 @@ void MainWindow::loadAntennaData(const QIniData &cnfgData)
                 continue;
             }
             antennaData.setModelName(antennaDataStringList[0]);
-            m_antDataList.append(antennaData);
+			m_antDataList.append(antennaData);
         }
     }
-}
-
-void MainWindow::saveAntennaData(QIniData &cnfgData) const
-{
-    for( int i = 0; i < m_antDataList.count(); i++ )
-		cnfgData[KEY_ANT(i+1)] = QString("%1,%2").arg(m_antDataList[i].modelName()).arg(m_antDataList[i].gain());
 }
 
 void MainWindow::onNewPIRE(int pire)
@@ -220,14 +197,26 @@ void MainWindow::openCnfgDlg()
 
     if( cnfgDlg.exec() == QDialog::Accepted )
     {
-        m_antDataList   = cnfgDlg.antennaDataList();
-        m_freqPIREList  = cnfgDlg.frequencyPIREList();
-        m_freqStep      = cnfgDlg.frequencyStep();
+		m_antDataList   = cnfgDlg.antennaDataList();
+		m_freqPIREList  = cnfgDlg.frequencyPIREList();
+		m_freqStep      = cnfgDlg.frequencyStep();
 
-        ui->cbFrecuencia->load( m_freqPIREList, m_freqStep );
-        ui->cbAPModel->load( m_antDataList );
-        ui->cbClModel->load( m_antDataList );
-    }
+		ui->cbFrecuencia->setup( m_freqPIREList, m_freqStep );
+		ui->cbAPModel->setup( m_antDataList );
+		ui->cbClModel->setup( m_antDataList );
+
+		QIniData iniData;
+		for( int i = 0; i < m_freqPIREList.count(); i++ )
+		{
+			iniData[KEY_FREQ(i+1)] = QString("%1,%2,%3")
+										.arg(m_freqPIREList[i].initialFrequency())
+										.arg(m_freqPIREList[i].endFrequency())
+										.arg(m_freqPIREList[i].frequencyPIRE());
+		}
+		for( int i = 0; i < m_antDataList.count(); i++ )
+			iniData[KEY_ANT(i+1)] = QString("%1,%2").arg(m_antDataList[i].modelName()).arg(m_antDataList[i].gain());
+		QIniFile::save(CONFIG_FNAME, iniData, QIniFile::CurrentDir);
+	}
 }
 
 #include <math.h>

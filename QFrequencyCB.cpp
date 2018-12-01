@@ -1,6 +1,6 @@
 #include "FrequencyPIRE.h"
 
-void QFrequencyComboBox::load(const QFrequencyPireList &freqPIREList, quint32 frequencyStep, QString frequencySelected)
+void QFrequencyComboBox::setup(const QFrequencyPireList &freqPIREList, quint32 frequencyStep, QString frequencySelected)
 {
     if( frequencySelected.isEmpty() )
         frequencySelected = currentText();

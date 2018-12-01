@@ -97,7 +97,7 @@ public:
     int currentPIRE() const				{ return pire(currentIndex());	}
     quint32 frequencyStep() const       { return m_freqStep;            }
 
-    void load(const QFrequencyPireList &freqPIREList, quint32 frequencyStep, QString frequencySelected = QString());
+    void setup(const QFrequencyPireList &freqPIREList, quint32 frequencyStep, QString frequencySelected = QString());
 
 
 private slots:

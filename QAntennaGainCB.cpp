@@ -10,10 +10,10 @@ QAntennaGainCB::~QAntennaGainCB()
 
 }
 
-void QAntennaGainCB::load(const QAntennaDataList &antDataList, const QString newAntenaModel)
+void QAntennaGainCB::setup(const QAntennaDataList &antDataList, const QString newAntenaModel)
 {
 	blockSignals(true);
-    QString oldModel = newAntenaModel.isEmpty() ? currentModel() : newAntenaModel;
+    QString oldModel = newAntenaModel.isEmpty() ? currentModelName() : newAntenaModel;
 	clear();
 
     for( int i = 0; i < antDataList.count(); i++ )

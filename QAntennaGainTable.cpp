@@ -1,7 +1,6 @@
-#include "AntennaGain.h"
+#include <QSpinBox>
 
 #include "AntennaGain.h"
-#include <QSpinBox>
 
 class QGainWidget : public QSpinBox
 {
@@ -20,7 +19,7 @@ QAntennaGainTable::QAntennaGainTable(QWidget *papi) :
     QTableWidget(papi)
 {
 	setColumnCount(2);
-    setHorizontalHeaderLabels( QStringList() << "Modelo" << "Ganancia");
+	setHorizontalHeaderLabels( QStringList() << "Modelo" << "Ganancia" );
 }
 
 QAntennaGainTable::~QAntennaGainTable()
@@ -52,6 +51,7 @@ quint32 QAntennaGainTable::gain(const QString &modelName) const
 void QAntennaGainTable::addRow(const QString &antenaModel, quint32 gain)
 {
 	int row = rowCount();
+	setHorizontalHeaderLabels( QStringList() << "Modelo" << "Ganancia" );
 	insertRow(row);
     setItem(row, 0, new QTableWidgetItem(antenaModel) );
 	setCellWidget(row, 1, new QGainWidget(gain) );
@@ -59,7 +59,8 @@ void QAntennaGainTable::addRow(const QString &antenaModel, quint32 gain)
 
 void QAntennaGainTable::load(const QAntennaDataList &antDataList)
 {
-	clear();
+	while( rowCount() )
+		removeRow(0);
     for( int i = 0; i < antDataList.count(); i++ )
         addRow(antDataList[i]);
 }

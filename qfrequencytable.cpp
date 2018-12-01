@@ -9,7 +9,9 @@ QFrequencyTable::QFrequencyTable(QWidget *papi) :
 
 void QFrequencyTable::load(const QFrequencyPireList &freqPIREList)
 {
-    for( int i = 0; i < freqPIREList.count(); i++ )
+	while( rowCount() )
+		removeRow(0);
+	for( int i = 0; i < freqPIREList.count(); i++ )
         addRow(freqPIREList[i]);
 }
 

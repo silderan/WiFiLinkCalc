@@ -49,11 +49,11 @@ public:
 	~QAntennaGainCB();
 
 	QString model(int index) const	{ return itemText(index);	}
-	QString currentModel() const	{ return currentText();	}
+	QString currentModelName() const	{ return currentText();	}
 	quint32 gain(int index) const	{ return itemData(index).toUInt();	}
 	quint32 currentGain() const		{ return itemData(currentIndex()).toUInt();	}
 
-    void load(const QAntennaDataList &antDataList, const QString newAntenaModel = QString() );
+    void setup(const QAntennaDataList &antDataList, const QString newAntenaModel = QString() );
 
 signals:
 	void gainChanged(quint32);
