@@ -5,6 +5,7 @@
 #include <QAction>
 
 #include "QIniFile.h"
+#include "BaseStationInfo.h"
 #include "FrequencyPIRE.h"
 #include "AntennaGain.h"
 
@@ -21,9 +22,11 @@ class MainWindow : public QMainWindow
 	QFrequencyPireList m_freqPIREList;
 	QAntennaDataList m_antDataList;
 	quint32 m_freqStep;
+    QBaseStationInfo m_baseStationInfo;
 
 	void loadPIREData(const QIniData &cnfgData);
 	void loadAntennaData(const QIniData &cnfgData);
+    void loadPanelCSV();
 
 public:
 	explicit MainWindow(QWidget *parent = Q_NULLPTR);
@@ -38,6 +41,8 @@ private slots:
     void onNewDistance(int dist);
     void openCnfgDlg();
     void recalc();
+    void on_cbEBName_currentIndexChanged(const QString &arg1);
+    void on_cbPanelName_currentIndexChanged(const QString &arg1);
 };
 
 #endif // MAINWINDOW_H

@@ -4,11 +4,13 @@
 #include <QMessageBox>
 
 #include "QIniFile.h"
+#include "qcsv.h"
 #include "AntennaGain.h"
 #include "DlgConfig.h"
 
 // Save file key definitions.
 #define CONFIG_FNAME	("PIRECalculator.ini")
+#define PANELCSV_FNAME  ("paneles.csv")
 #define KEY_FREQ(_l)    (QString("freq-list_%1").arg(_l))
 #define KEY_FSTEP       ("freq-step")
 #define KEY_CURFR       ("freq-curr")
@@ -100,6 +102,7 @@ void MainWindow::loadAll()
 		ui->cbClModel->setup( m_antDataList );
 	}
 
+    loadPanelCSV();
 	ui->cbFrecuencia->setCurrentFrequency( userData[KEY_CURFR] );
 	ui->sbAPGain->setValue( userData[KEY_APGAIN].toInt() );
 	ui->sbClGain->setValue( userData[KEY_CLGAIN].toInt() );
@@ -188,6 +191,12 @@ void MainWindow::loadAntennaData(const QIniData &cnfgData)
     }
 }
 
+void MainWindow::loadPanelCSV()
+{
+    m_baseStationInfo.loadPanelsCSV(PANELCSV_FNAME);
+    ui->cbEBName->addItems( m_baseStationInfo.baseStationNames());
+}
+
 void MainWindow::onNewPIRE(int pire)
 {
     ui->sbPIRE->setValue(pire);
@@ -254,4 +263,15 @@ void MainWindow::recalc()
 
 	ui->lbAPRxPwd->setText(QString("de %1 a %2 dBm").arg(powerSISO+3+ui->sbAPGain->value()).arg(powerSISO+ui->sbAPGain->value()));
 	ui->lbClRxPwd->setText(QString("de %1 a %2 dBm").arg(powerSISO+3+ui->sbClGain->value()).arg(powerSISO+ui->sbClGain->value()));
+}
+
+void MainWindow::on_cbEBName_currentIndexChanged(const QString &arg1)
+{
+    ui->cbPanelName->clear();
+    ui->cbPanelName->addItems(m_baseStationInfo.panelNames(arg1));
+}
+
+void MainWindow::on_cbPanelName_currentIndexChanged(const QString &arg1)
+{
+    ui->cbFrecuencia->selectFrequency(m_baseStationInfo.frequency(ui->cbEBName->currentText(), arg1));
 }

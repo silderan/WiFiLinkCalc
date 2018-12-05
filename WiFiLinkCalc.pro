@@ -20,13 +20,17 @@ SOURCES += main.cpp\
     QAntennaGainCB.cpp \
     QAntennaGainTable.cpp \
     QFrequencyCB.cpp \
-    QFrequencyTable.cpp
+    QFrequencyTable.cpp \
+    qcsv.cpp \
+    BaseStationInfo.cpp
 
 HEADERS  += mainwindow.h \
     QIniFile.h \
     DlgConfig.h \
     AntennaGain.h \
-    FrequencyPIRE.h
+    FrequencyPIRE.h \
+    qcsv.h \
+    BaseStationInfo.h
 
 FORMS    += mainwindow.ui \
     DlgConfig.ui
