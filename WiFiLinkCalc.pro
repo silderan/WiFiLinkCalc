@@ -7,6 +7,7 @@
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+win32:RC_ICONS += wifi.ico
 
 TARGET = WiFiLinkCalc
 TEMPLATE = app
@@ -29,3 +30,5 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     DlgConfig.ui
+
+RESOURCES +=

@@ -53,7 +53,7 @@ public:
 	quint32 gain(int index) const	{ return itemData(index).toUInt();	}
 	quint32 currentGain() const		{ return itemData(currentIndex()).toUInt();	}
 
-    void setup(const QAntennaDataList &antDataList, const QString newAntenaModel = QString() );
+    void setup(const QAntennaDataList &antDataList);
 
 signals:
 	void gainChanged(quint32);
@@ -61,7 +61,7 @@ signals:
 public slots:
     void selectAntenaModel(const QString &antennaModel);
 private slots:
-	void onIndexChanged(int);
+	void onIndexChanged(int index);
 };
 
 class QAntennaGainTable : public QTableWidget

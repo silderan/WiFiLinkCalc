@@ -35,7 +35,7 @@ public:
     void setEndFrequency(const quint32 &endFrequency)   { m_endFrequency = endFrequency; }
 
     qint32 frequencyPIRE() const                    { return m_pire; }
-    void setFrequencyPire(const qint32 &pire)       { m_pire = pire; }
+	void setFrequencyPIRE(const qint32 &pire)       { m_pire = pire; }
 };
 
 class QFrequencyPireList : public QList<FrequencyPire>
@@ -97,8 +97,9 @@ public:
     int currentPIRE() const				{ return pire(currentIndex());	}
     quint32 frequencyStep() const       { return m_freqStep;            }
 
-    void setup(const QFrequencyPireList &freqPIREList, quint32 frequencyStep, QString frequencySelected = QString());
-
+    void setup(const QFrequencyPireList &freqPIREList, quint32 frequencyStep);
+	void setCurrentFrequency(const QString &freq)	{ setCurrentIndex(findText(freq));	}
+	void setCurrentFrequency(quint32 fr)	{ setCurrentFrequency(QString("%1").arg(fr));	}
 
 private slots:
     void onNewFreqSelected(int index);

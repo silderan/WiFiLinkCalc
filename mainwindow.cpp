@@ -14,8 +14,10 @@
 #define KEY_CURFR       ("freq-curr")
 
 #define KEY_ANT(_l)     (QString("antenna_%1").arg(_l)) // Antenna model key
-#define KEY_ANTAP       ("antenna-acces-point")         // AP antenna model CB current selected.
-#define KEY_ANTCL       ("antenna-client")              // Client antenna model CB current selected.
+#define KEY_APMODL		("acces-point-model")			// AP antenna model CB current selected.
+#define KEY_APGAIN		("acces-point-gain")
+#define KEY_CLMODL      ("client-antenna-model")
+#define KEY_CLGAIN		("client-gain")
 
 #define KEY_DIST        ("link-distance")
 #define KEY_PIRE        ("AP-custom-pire")
@@ -62,8 +64,11 @@ void MainWindow::saveUserData() const
 	cnfgData[KEY_PIRE] = QString("%1").arg(ui->sbPIRE->value());
 	cnfgData[KEY_DIST] = QString("%1").arg(ui->sbDistance->value());
 
-	cnfgData[KEY_ANTAP] = ui->cbAPModel->currentModelName();
-	cnfgData[KEY_ANTCL] = ui->cbClModel->currentModelName();
+	cnfgData[KEY_APMODL] = ui->cbAPModel->currentModelName();
+	cnfgData[KEY_APGAIN] = QString("%1").arg(ui->sbAPGain->value());
+
+	cnfgData[KEY_CLMODL] = ui->cbClModel->currentModelName();
+	cnfgData[KEY_CLGAIN] = QString("%1").arg(ui->sbClGain->value());
 
 	QIniFile::save(CONFIG_FNAME, cnfgData, QIniFile::UserDocuments);
 }
@@ -79,10 +84,25 @@ void MainWindow::loadAll()
 	loadAntennaData(glblData);
 	m_freqStep = glblData[KEY_FSTEP].toUInt();
 
-	ui->cbFrecuencia->setup( m_freqPIREList, m_freqStep, userData[KEY_CURFR] );
-	ui->cbAPModel->setup( m_antDataList, userData[KEY_ANTAP] );
-	ui->cbClModel->setup( m_antDataList, userData[KEY_ANTCL] );
+	if( m_freqStep <= 0 )
+	{
+		do
+		{
+			SHOWMESSAGE( tr("Datos cargados de fichero"), tr("Los intérvalos de frecuenca cargados son 0. Por favor, configura un valor válido.") );
+			openCnfgDlg();
+		}
+		while( m_freqStep <= 0 );
+	}
+	else
+	{
+		ui->cbFrecuencia->setup( m_freqPIREList, m_freqStep );
+		ui->cbAPModel->setup( m_antDataList );
+		ui->cbClModel->setup( m_antDataList );
+	}
 
+	ui->cbFrecuencia->setCurrentFrequency( userData[KEY_CURFR] );
+	ui->sbAPGain->setValue( userData[KEY_APGAIN].toInt() );
+	ui->sbClGain->setValue( userData[KEY_CLGAIN].toInt() );
 	ui->sbPIRE->setValue( userData[KEY_PIRE].toInt() );
 	ui->sbDistance->setValue( userData[KEY_DIST].toInt() );
 }
@@ -122,7 +142,7 @@ void MainWindow::loadPIREData(const QIniData &cnfgData)
                              .arg(freqPIREDataStringList[1]));
                 continue;
             }
-            frequencyPIREData.setFrequencyPire(freqPIREDataStringList[2].toInt(&ok));
+			frequencyPIREData.setFrequencyPIRE(freqPIREDataStringList[2].toInt(&ok));
             if( !ok )
             {
                 SHOWMESSAGE( tr("Formato erroneo en los datos leídos para el PIRE según frecuencia"),
@@ -206,6 +226,7 @@ void MainWindow::openCnfgDlg()
 		ui->cbClModel->setup( m_antDataList );
 
 		QIniData iniData;
+		iniData[KEY_FSTEP] = QString("%1").arg(m_freqStep);
 		for( int i = 0; i < m_freqPIREList.count(); i++ )
 		{
 			iniData[KEY_FREQ(i+1)] = QString("%1,%2,%3")
@@ -231,6 +252,6 @@ void MainWindow::recalc()
     // Pout + AntennaGain1 + AntennaGain2 - (36,56+20*LOG10(<Frequency>)+20*LOG10(<Distance>*0,000621))
     powerSISO = ui->sbPIRE->value() - static_cast<int>(loss);
 
-    ui->lbAPRxPwd->setText(QString("%1-%2 dBm").arg(powerSISO+ui->sbAPGain->value()).arg(powerSISO+3+ui->sbAPGain->value()));
-    ui->lbClRxPwd->setText(QString("%1-%2 dBm").arg(powerSISO+ui->sbClGain->value()).arg(powerSISO+3+ui->sbClGain->value()));
+	ui->lbAPRxPwd->setText(QString("de %1 a %2 dBm").arg(powerSISO+3+ui->sbAPGain->value()).arg(powerSISO+ui->sbAPGain->value()));
+	ui->lbClRxPwd->setText(QString("de %1 a %2 dBm").arg(powerSISO+3+ui->sbClGain->value()).arg(powerSISO+ui->sbClGain->value()));
 }

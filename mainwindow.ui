@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>302</width>
+    <width>311</width>
     <height>172</height>
    </rect>
   </property>
@@ -94,8 +94,8 @@
      <widget class="QLabel" name="lbLoss">
       <property name="font">
        <font>
-        <family>MS Sans Serif</family>
-        <pointsize>10</pointsize>
+        <family>MS Shell Dlg 2</family>
+        <pointsize>8</pointsize>
         <weight>75</weight>
         <italic>true</italic>
         <bold>true</bold>
@@ -130,7 +130,11 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QSpinBox" name="sbAPGain"/>
+        <widget class="QSpinBox" name="sbAPGain">
+         <property name="suffix">
+          <string> dBi</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_6">
@@ -143,6 +147,7 @@
         <widget class="QLabel" name="lbAPRxPwd">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <italic>true</italic>
            <bold>true</bold>
@@ -180,7 +185,11 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QSpinBox" name="sbClGain"/>
+        <widget class="QSpinBox" name="sbClGain">
+         <property name="suffix">
+          <string> dBi</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_7">
@@ -193,6 +202,7 @@
         <widget class="QLabel" name="lbClRxPwd">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <italic>true</italic>
            <bold>true</bold>

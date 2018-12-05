@@ -10,19 +10,21 @@ QAntennaGainCB::~QAntennaGainCB()
 
 }
 
-void QAntennaGainCB::setup(const QAntennaDataList &antDataList, const QString newAntenaModel)
+void QAntennaGainCB::setup(const QAntennaDataList &antDataList)
 {
 	blockSignals(true);
-    QString oldModel = newAntenaModel.isEmpty() ? currentModelName() : newAntenaModel;
+	QString oldModel = currentModelName();
 	clear();
 
     for( int i = 0; i < antDataList.count(); i++ )
         addItem(antDataList[i].modelName(), antDataList[i].gain());
 
-	blockSignals(false);
     selectAntenaModel(oldModel);
     if( (currentIndex() == -1) && count() )
         setCurrentIndex(0);
+	blockSignals(false);
+	if( currentIndex() != -1 )
+		onIndexChanged(currentIndex());
 }
 
 void QAntennaGainCB::selectAntenaModel(const QString &antennaModel)
@@ -30,9 +32,7 @@ void QAntennaGainCB::selectAntenaModel(const QString &antennaModel)
     setCurrentIndex( findText(antennaModel) );
 }
 
-void QAntennaGainCB::onIndexChanged(int /*index*/)
+void QAntennaGainCB::onIndexChanged(int index)
 {
-    static quint32 oldGain = 0;
-    if( oldGain != currentGain() )
-        emit gainChanged( currentGain() );
+	emit gainChanged( gain(index) );
 }
