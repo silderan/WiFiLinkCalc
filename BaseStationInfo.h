@@ -4,98 +4,82 @@
 #include <QStringList>
 #include <QMap>
 
+struct BaseStation
+{
+    QString m_id;
+    QString m_name;
+
+    BaseStation()
+    {    }
+    BaseStation(const BaseStation &bs) :
+        m_id(bs.m_id),
+        m_name(bs.m_name)
+    {
+
+    }
+    BaseStation(const QString &id, const QString &name) :
+        m_id(id),
+        m_name(name)
+    {
+
+    }
+};
+
+class QBaseStationMap : public QMap<QString, BaseStation>
+{
+public:
+    void add(const BaseStation &bs)                     { insert(bs.m_id, bs); }
+    void add(const QString &id, const QString &name)    { add(BaseStation(id, name)); }
+};
+typedef QMapIterator<QString, BaseStation> QBaseStationMapIterator;
+
 struct Panel
 {
+    QString m_bsID; // Identificador de la estación base.
     QString m_name;
-	QString m_modelName;
-	QString m_modelID;
+    QString m_ssid;
+    QString m_description;
+    QString m_degrees;
     QString m_freq;
 	QString m_gain;
     QString m_power;
-    Panel()
+
+    explicit Panel()
     {   }
     Panel(const Panel &panel) :
+        m_bsID(panel.m_bsID),
 		m_name(panel.m_name),
-		m_modelName(panel.m_modelName),
-		m_modelID(panel.m_modelID),
-		m_freq(panel.m_freq),
+        m_ssid(panel.m_ssid),
+        m_description(panel.m_description),
+        m_degrees(panel.m_degrees),
+        m_freq(panel.m_freq),
 		m_gain(panel.m_gain),
 		m_power(panel.m_power)
     {   }
-	Panel(const QString &name, const QString &modelName, const QString &modelID, const QString &freq, const QString &gain, const QString &power) :
+    Panel(const QString &bsID, const QString &name, const QString &ssid, const QString &description, const QString &degrees, const QString &freq, const QString &gain, const QString &power) :
+        m_bsID(bsID),
 		m_name(name),
-		m_modelName(modelName),
-		m_modelID(modelID),
+        m_ssid(ssid),
+        m_description(description),
+        m_degrees(degrees),
 		m_freq(freq),
 		m_gain(gain),
 		m_power(power)
     {   }
+
+    // The ID of the panel is, for now, the degrees and gain.
+    QString panelID() const { return QString("%1-%2").arg(m_degrees, m_gain);   }
 };
 
 class QPanelMap : public QMap<QString, Panel>
 {
-public:
-	Panel panel(const QString &panelName) const		{ return value(panelName);  }
-
-    void addPanel(const Panel &panel)
-    {   insert(panel.m_name, panel);    }
-
-	void addPanel(const QString &name, const QString &modelName, const QString &modelID, const QString &frequency, const QString &gain, const QString &outPower)
-	{   addPanel( Panel(name, modelName, modelID, frequency, gain, outPower)); }
-
-	QString modelName(const QString &name) const	{ return panel(name).m_modelName;	}
-	QString modelID(const QString &name) const		{ return panel(name).m_modelID;		}
-	QString frequency(const QString &name) const	{ return panel(name).m_freq;		}
-	QString outPower(const QString &name) const		{ return panel(name).m_power;		}
-	QString gain(const QString &name) const			{ return panel(name).m_gain;		}
-
-	QStringList panelNames() const				{ return keys();    }
-};
-typedef QMapIterator<QString, Panel> QPanelMapIterator;
-
-class QBaseStationPanelMap : public QMap<QString, QPanelMap>
-{
 
 public:
-    void addPanel(const QString &baseStationName, const Panel &panel)
-		{ (*this)[baseStationName].addPanel(panel); }
-	void addPanel(const QString &baseStationName, const QString &name, const QString &modelName, const QString &modelID, const QString &freq, const QString &gain, const QString power)
-		{ addPanel(baseStationName, Panel(name, modelName, modelID, freq, gain, power)); }
-
-	QStringList baseStationNames() const				{ return keys();    }
-	QStringList panelNames(const QString &bsName) const	{ return value(bsName).panelNames();   }
-
-	QString frequency(const QString &bsName, const QString &panelName)	{ return (*this)[bsName].frequency(panelName);	}
-	QString modelName(const QString &bsName, const QString &panelName)	{ return (*this)[bsName].modelName(panelName);	}
-	QString modelID(const QString &bsName, const QString &panelName)	{ return (*this)[bsName].modelID(panelName);	}
-	QString gain(const QString &bsName, const QString &panelName)		{ return (*this)[bsName].gain(panelName);	}
-};
-
-class QBaseStationNameMap : public QMap<QString, QString>
-{
-
-public:
-	void add(const QString &id, const QString &name)
-	{	insert(id, name);	}
-	QString name(const QString &id) const	{ return value(id);	}
-	const QList<QString> names() const	{ return values();	}
-	const QList<QString> ids() const	{ return keys();	}
-};
-
-class QBaseStationInfo
-{
-	QBaseStationPanelMap m_bsPanelMap;
-
-public:
-	QStringList baseStationIDs() const { return m_bsPanelMap.baseStationNames();  }
-	QStringList panelNames(const QString &bsName)						{ return m_bsPanelMap.panelNames(bsName);   }
-	QString frequency(const QString &bsID, const QString &panelName)	{ return m_bsPanelMap.frequency(bsID, panelName); }
-	QString modelName(const QString &bsID, const QString &panelName)	{ return m_bsPanelMap.modelName(bsID, panelName); }
-	QString modelID(const QString &bsID, const QString &panelName)		{ return m_bsPanelMap.modelID(bsID, panelName); }
-	QString gain(const QString bsID, const QString &panelName)			{ return m_bsPanelMap.gain(bsID, panelName); }
-	QBaseStationInfo();
+    QPanelMap();
+    void add(const Panel &panel)    { insert(panel.m_name, panel); }
     void loadPanelsCSV(const QString &fname);
 };
+typedef QMapIterator<QString, Panel> QPanelMapIterator;
 
 #include <QTableWidget>
 class QBaseStationTable : public QTableWidget
@@ -103,39 +87,44 @@ class QBaseStationTable : public QTableWidget
 
 public:
 	QBaseStationTable(QWidget *papi = Q_NULLPTR);
-	void addRow(const QString &id = QString(), const QString &name = QString());
-	void setup(const QBaseStationNameMap &baseStationMap);
-	QBaseStationNameMap save() const;
+    void addRow(const QString &id = QString(), const QString &name = QString());
+    void setup(const QBaseStationMap &bsMap);
+    QBaseStationMap save() const;
 };
+
 
 #include <QComboBox>
-class QBaseStationCB : public QComboBox
-{
-	Q_OBJECT
-
-public:
-	explicit QBaseStationCB(QWidget *papi = Q_NULLPTR);
-	~QBaseStationCB()
-	{	}
-	void selectBaseStation(const QString &baseStationID);
-	QString currentBaseStationID() const	{ return currentData().toString();	}
-	QString currentBaseStationName() const	{ return currentText();	}
-	void setup(const QBaseStationInfo &bsInfo, const QBaseStationNameMap &bsMap, const QString &newBSName = QString());
-
-public slots:
-	void onNewBaseSelected(int index);
-
-signals:
-	void newBaseStationSelected(const QString &id);
-};
-
 class QPanelCB : public QComboBox
 {
+    enum col
+    {
+        ID = Qt::UserRole,
+        Name,
+        SSID,
+        Description,
+        Degrees,
+        Frequency,
+        Gain,
+        Power,
+        BaseStationID
+    };
 
+    QString currentData(col c) const  { return itemData(currentIndex(), c).toString(); }
 public:
-	QPanelCB(QWidget *papi = Q_NULLPTR);
-	void selectPanel(const QString &panelName);
-	QString currentPanelName() const { return currentText();	}
+    QPanelCB(QWidget *papi = Q_NULLPTR);
+    void selectPanel(const QString &panelID);
+
+    QString currentID() const               { return currentData(ID);   }
+    QString currentName() const             { return currentData(Name);	}
+    QString currentSSID() const             { return currentData(SSID);	}
+    QString currentDescription() const      { return currentData(Description);	}
+    QString currentDegrees()                { return currentData(Degrees);	}
+    QString currentFrequency()              { return currentData(Frequency);	}
+    QString currentGain()                   { return currentData(Gain);	}
+    QString currentPower()                  { return currentData(Power);	}
+    QString currentBaseStationID() const	{ return currentData(BaseStationID);	}
+    void setup(const QPanelMap &panelMap, const QBaseStationMap bsMap, const QString &newBSName = QString());
+
 };
 
 #endif // BASESTATIONINFO_H

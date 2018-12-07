@@ -18,13 +18,13 @@ class DlgConfig : public QDialog
 	Ui::DlgConfig *ui;
 
 public:
-	explicit DlgConfig(const QFrequencyPireList &freqPIREList, const QAntennaDataList &antDataList, const quint32 freqStep, const QBaseStationNameMap &baseStationNameMap, QWidget *parent = Q_NULLPTR);
+	explicit DlgConfig(const QFrequencyPireList &freqPIREList, const QAntennaDataList &antDataList, const quint32 freqStep, const QBaseStationMap &baseStationNameMap, QWidget *parent = Q_NULLPTR);
 	~DlgConfig();
 
     QFrequencyPireList frequencyPIREList() const;
 	quint32 frequencyStep()const;
     QAntennaDataList antennaDataList() const;
-	QBaseStationNameMap baseStationNameMap() const;
+	QBaseStationMap baseStationNameMap() const;
 
 private slots:
 	void on_btOk_clicked();

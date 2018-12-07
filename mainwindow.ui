@@ -20,6 +20,9 @@
       <property name="text">
        <string>Loss</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="2" column="3">
@@ -52,6 +55,9 @@
       <property name="text">
        <string>Frecuencia</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="2" column="0">
@@ -65,17 +71,20 @@
       <property name="text">
        <string>Distancia</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label_11">
       <property name="text">
-       <string>EB</string>
+       <string>Panel</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QBaseStationCB" name="cbBaseStations"/>
     </item>
     <item row="3" column="0" colspan="2">
      <widget class="QGroupBox" name="groupBox">
@@ -88,6 +97,9 @@
          <property name="text">
           <string>Modelo</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
         </widget>
        </item>
        <item row="0" column="1">
@@ -97,6 +109,9 @@
         <widget class="QLabel" name="label_2">
          <property name="text">
           <string>Ganancia</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -111,6 +126,9 @@
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>Potencia</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -143,6 +161,9 @@
          <property name="text">
           <string>Modelo</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
         </widget>
        </item>
        <item row="0" column="1">
@@ -152,6 +173,9 @@
         <widget class="QLabel" name="label_4">
          <property name="text">
           <string>Ganancia</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -166,6 +190,9 @@
         <widget class="QLabel" name="label_7">
          <property name="text">
           <string>Potencia</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -229,14 +256,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="label_12">
-      <property name="text">
-       <string>Panel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
+    <item row="0" column="1" colspan="3">
      <widget class="QPanelCB" name="cbPanelNames"/>
     </item>
    </layout>
@@ -253,11 +273,6 @@
    <class>QAntennaGainCB</class>
    <extends>QComboBox</extends>
    <header>AntennaGain.h</header>
-  </customwidget>
-  <customwidget>
-   <class>QBaseStationCB</class>
-   <extends>QComboBox</extends>
-   <header>BaseStationInfo.h</header>
   </customwidget>
   <customwidget>
    <class>QPanelCB</class>

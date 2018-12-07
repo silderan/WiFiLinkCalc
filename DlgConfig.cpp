@@ -4,7 +4,7 @@
 DlgConfig::DlgConfig(const QFrequencyPireList &freqPIREList,
                      const QAntennaDataList &antDataList,
 					 const quint32 freqStep,
-					 const QBaseStationNameMap &baseStationNameMap,
+                     const QBaseStationMap &baseStationNameMap,
                      QWidget *parent) :
     QDialog(parent), ui(new Ui::DlgConfig)
 {
@@ -37,7 +37,7 @@ QAntennaDataList DlgConfig::antennaDataList() const
 	return ui->gainTable->save();
 }
 
-QBaseStationNameMap DlgConfig::baseStationNameMap() const
+QBaseStationMap DlgConfig::baseStationNameMap() const
 {
 	return ui->baseStationTable->save();
 }
@@ -96,5 +96,5 @@ void DlgConfig::on_addModelGain_clicked()
 
 void DlgConfig::on_pbAddBaseStation_clicked()
 {
-	ui->baseStationTable->addRow();
+    ui->baseStationTable->addRow();
 }
