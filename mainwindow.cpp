@@ -21,6 +21,9 @@
 #define KEY_CLMODL      ("client-antenna-model")
 #define KEY_CLGAIN		("client-gain")
 
+#define KEY_BSN(_l)		(QString("base-station-name_%1").arg(_l))
+#define KEY_BSNCUR		("base-station-name-current")
+
 #define KEY_DIST        ("link-distance")
 #define KEY_PIRE        ("AP-custom-pire")
 
@@ -42,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( cnfgAction, SIGNAL(triggered()), this, SLOT(loadAll()) );
     this->addAction( cnfgAction );
 
+	connect( ui->cbBaseStations, SIGNAL(newBaseStationSelected(QString)), SLOT(onNewBaseStationSelected(QString)) );
 	connect( ui->cbFrecuencia, SIGNAL(pireChanged(int)), this, SLOT(onNewPIRE(int)) );
     connect( ui->cbAPModel, SIGNAL(gainChanged(quint32)),this, SLOT(onNewAPGain(quint32)) );
     connect( ui->cbClModel, SIGNAL(gainChanged(quint32)),this, SLOT(onNewClGain(quint32)) );
@@ -49,7 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->sbPIRE, SIGNAL(valueChanged(int)), this, SLOT(onNewPIRE(int)) );
     connect( ui->sbAPGain, SIGNAL(valueChanged(int)), this, SLOT(recalc()) );
     connect( ui->sbClGain, SIGNAL(valueChanged(int)), this, SLOT(recalc()) );
-    loadAll();
+
+	loadAll();
 }
 
 MainWindow::~MainWindow()
@@ -85,6 +90,7 @@ void MainWindow::loadAll()
 	loadPIREData(glblData);
 	loadAntennaData(glblData);
 	m_freqStep = glblData[KEY_FSTEP].toUInt();
+	loadBaseStationNames(glblData);
 
 	if( m_freqStep <= 0 )
 	{
@@ -108,6 +114,9 @@ void MainWindow::loadAll()
 	ui->sbClGain->setValue( userData[KEY_CLGAIN].toInt() );
 	ui->sbPIRE->setValue( userData[KEY_PIRE].toInt() );
 	ui->sbDistance->setValue( userData[KEY_DIST].toInt() );
+
+	ui->cbBaseStations->setup( m_bsInfo, m_bsNameMap, userData[KEY_BSNCUR] );
+	ui->cbPanelNames->selectPanel( userData[KEY_BSNCUR] );
 }
 
 void MainWindow::loadPIREData(const QIniData &cnfgData)
@@ -170,9 +179,9 @@ void MainWindow::loadAntennaData(const QIniData &cnfgData)
         QStringList antennaDataStringList = antennaDataString.split(',', QString::SkipEmptyParts);
         AntennaData antennaData;
 
-        if( antennaDataStringList.count() != 2 )
+		if( antennaDataStringList.count() < 2 )
             SHOWMESSAGE( tr("Formato erroneo en los datos leídos para la ganancia de las antenas según modelo"),
-                         tr("En la configuración de las ganancias según modelo para la linea %1 no hay 3 datos (modelo y ganancia)")
+						 tr("En la configuración de las ganancias según modelo para la linea %1 no hay 2 datos (modelo y ganancia)")
                             .arg(antennaDataString));
         else
         {
@@ -185,16 +194,34 @@ void MainWindow::loadAntennaData(const QIniData &cnfgData)
                              .arg(antennaDataStringList[1]));
                 continue;
             }
-            antennaData.setModelName(antennaDataStringList[0]);
+			if( antennaDataStringList.count() >= 3 )
+				antennaData.setID( antennaDataStringList[2] );
+
+			antennaData.setModelName(antennaDataStringList[0]);
 			m_antDataList.append(antennaData);
         }
-    }
+	}
+}
+
+void MainWindow::loadBaseStationNames(const QIniData &cnfgData)
+{
+	m_bsNameMap.clear();
+	QString line;
+	for( int l = 1; !(line = cnfgData[KEY_BSN(l)]).isEmpty(); l++ )
+	{
+		QStringList kvPair = line.split(',', QString::SkipEmptyParts);
+		if( kvPair.count() != 2 )
+			SHOWMESSAGE( tr("Formato erroneo en los datos leídos para el nombre de la estación base"),
+						 tr("En la configuración de los nombres para estaciones base para la linea %1 no hay 2 datos (ID y nombre)")
+							.arg(line));
+		else
+			m_bsNameMap.add(kvPair[0], kvPair[1]);
+	}
 }
 
 void MainWindow::loadPanelCSV()
 {
-    m_baseStationInfo.loadPanelsCSV(PANELCSV_FNAME);
-    ui->cbEBName->addItems( m_baseStationInfo.baseStationNames());
+	m_bsInfo.loadPanelsCSV(PANELCSV_FNAME);
 }
 
 void MainWindow::onNewPIRE(int pire)
@@ -222,29 +249,44 @@ void MainWindow::onNewDistance(int /*dist*/)
 
 void MainWindow::openCnfgDlg()
 {
-	DlgConfig cnfgDlg(m_freqPIREList, m_antDataList, m_freqStep, this);
+	DlgConfig cnfgDlg(m_freqPIREList, m_antDataList, m_freqStep, m_bsNameMap, this);
 
     if( cnfgDlg.exec() == QDialog::Accepted )
     {
+		int i;
 		m_antDataList   = cnfgDlg.antennaDataList();
 		m_freqPIREList  = cnfgDlg.frequencyPIREList();
 		m_freqStep      = cnfgDlg.frequencyStep();
+		m_bsNameMap		= cnfgDlg.baseStationNameMap();
 
 		ui->cbFrecuencia->setup( m_freqPIREList, m_freqStep );
 		ui->cbAPModel->setup( m_antDataList );
 		ui->cbClModel->setup( m_antDataList );
+		ui->cbBaseStations->setup( m_bsInfo, m_bsNameMap );
 
 		QIniData iniData;
 		iniData[KEY_FSTEP] = QString("%1").arg(m_freqStep);
-		for( int i = 0; i < m_freqPIREList.count(); i++ )
+		for( i = 0; i < m_freqPIREList.count(); i++ )
 		{
 			iniData[KEY_FREQ(i+1)] = QString("%1,%2,%3")
 										.arg(m_freqPIREList[i].initialFrequency())
 										.arg(m_freqPIREList[i].endFrequency())
 										.arg(m_freqPIREList[i].frequencyPIRE());
 		}
-		for( int i = 0; i < m_antDataList.count(); i++ )
-			iniData[KEY_ANT(i+1)] = QString("%1,%2").arg(m_antDataList[i].modelName()).arg(m_antDataList[i].gain());
+		for( i = 0; i < m_antDataList.count(); i++ )
+			iniData[KEY_ANT(i+1)] = QString("%1,%2,%3")
+					.arg(m_antDataList[i].modelName())
+					.arg(m_antDataList[i].gain())
+					.arg(m_antDataList[i].id());
+
+		QMapIterator<QString,QString> it(m_bsNameMap);
+		i = 0;
+		while( it.hasNext() )
+		{
+			it.next();
+			iniData[KEY_BSN(++i)] = QString("%1,%2").arg(it.key(), it.value());
+		}
+
 		QIniFile::save(CONFIG_FNAME, iniData, QIniFile::CurrentDir);
 	}
 }
@@ -265,13 +307,15 @@ void MainWindow::recalc()
 	ui->lbClRxPwd->setText(QString("de %1 a %2 dBm").arg(powerSISO+3+ui->sbClGain->value()).arg(powerSISO+ui->sbClGain->value()));
 }
 
-void MainWindow::on_cbEBName_currentIndexChanged(const QString &arg1)
+void MainWindow::onNewBaseStationSelected(QString bsID)
 {
-    ui->cbPanelName->clear();
-    ui->cbPanelName->addItems(m_baseStationInfo.panelNames(arg1));
+	ui->cbPanelNames->clear();
+	ui->cbPanelNames->addItems(m_bsInfo.panelNames(bsID));
 }
 
-void MainWindow::on_cbPanelName_currentIndexChanged(const QString &arg1)
+void MainWindow::on_cbPanelNames_currentIndexChanged(const QString &panelName)
 {
-    ui->cbFrecuencia->selectFrequency(m_baseStationInfo.frequency(ui->cbEBName->currentText(), arg1));
+	ui->cbFrecuencia->selectFrequency( m_bsInfo.frequency(ui->cbBaseStations->currentBaseStationID(), panelName) );
+	ui->cbAPModel->selectAntenaModel( m_bsInfo.modelID(ui->cbBaseStations->currentBaseStationID(), panelName),
+									  m_bsInfo.gain(ui->cbBaseStations->currentBaseStationID(), panelName) );
 }

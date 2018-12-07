@@ -10,7 +10,7 @@ QBaseStationInfo::QBaseStationInfo()
 void QBaseStationInfo::loadPanelsCSV(const QString &fname)
 {
     CSVData csvData = QCSV::load(fname);
-    m_baseStationMap.clear();
+	m_bsPanelMap.clear();
 
     if( csvData.count() < 2 )
         return;
@@ -38,16 +38,103 @@ void QBaseStationInfo::loadPanelsCSV(const QString &fname)
         if( ll.count() == 4 )
         {
             int i = 0;
+			while( isalpha(ll[0][i].toLatin1()) )
+				i++;
             while( isdigit(ll[0][i].toLatin1()) )
                 i++;
-            if( i != 0 )
+			if( isalpha(ll[0][i].toLatin1()) )
             {
-                QString baseName = ll[0].left(i);
-                QString panelDir = ll[0].right(ll[0].length()-i);
-                QString frequency = panelData[frequencyCol];
-                frequency = frequency.replace(" MHz", "");
-                m_baseStationMap.addPanel( baseName, panelName, panelData[descriptionCol], frequency, ll[2] );
+				QString description = panelData[descriptionCol];
+				QString bsID = ll[0].left(i);
+				QString frequency = panelData[frequencyCol].replace(" MHz", "");
+				QString panelID = ll[1];
+				QString gain = ll[2];
+				QString power = ll[3];
+
+				m_bsPanelMap.addPanel( bsID, panelName, description, panelID, frequency, gain, power );
             }
         }
     }
+}
+
+QBaseStationTable::QBaseStationTable(QWidget *papi) :
+	QTableWidget(papi)
+{
+
+}
+
+void QBaseStationTable::addRow(const QString &id, const QString &name)
+{
+	int row = rowCount();
+
+	insertRow(row);
+	setItem(row, 0, new QTableWidgetItem(id));
+	setItem(row, 1, new QTableWidgetItem(name));
+}
+
+void QBaseStationTable::setup(const QBaseStationNameMap &baseStationMap)
+{
+	QMapIterator<QString, QString> it(baseStationMap);
+
+	setColumnCount(2);
+	setHorizontalHeaderLabels( QStringList() << tr("ID") << tr("Nombre") );
+	while( it.hasNext() )
+	{
+		it.next();
+		addRow(it.key(), it.value());
+	}
+}
+
+QBaseStationNameMap QBaseStationTable::save() const
+{
+	QBaseStationNameMap bsm;
+
+	for( int row = 0; row < rowCount(); row++ )
+		bsm.add(item(row, 0)->text(), item(row, 1)->text());
+
+	return bsm;
+}
+
+QBaseStationCB::QBaseStationCB(QWidget *papi) :
+	QComboBox(papi)
+{
+	connect( this, SIGNAL(currentIndexChanged(int)), this, SLOT(onNewBaseSelected(int)) );
+}
+
+void QBaseStationCB::selectBaseStation(const QString &baseStationID)
+{
+	for( int i = 0; i < count(); i++ )
+		if( itemData(i).toString() == baseStationID )
+			setCurrentIndex(i);
+}
+
+void QBaseStationCB::setup(const QBaseStationInfo &bsInfo, const QBaseStationNameMap &bsMap, const QString &newBaseStationID)
+{
+	blockSignals(true);
+	clear();
+	foreach( QString id, bsInfo.baseStationIDs() )
+		addItem( bsMap.contains(id) ? QString("EB%1 - %2").arg(id, bsMap.name(id)) : QString("EB%1").arg(id), id );
+	blockSignals(false);
+	if( !newBaseStationID.isEmpty() )
+		selectBaseStation(newBaseStationID);
+	else
+		onNewBaseSelected(currentIndex());
+}
+
+void QBaseStationCB::onNewBaseSelected(int /*index*/)
+{
+	emit newBaseStationSelected( currentBaseStationID() );
+}
+
+QPanelCB::QPanelCB(QWidget *papi) :
+	QComboBox(papi)
+{
+
+}
+
+void QPanelCB::selectPanel(const QString &panelName)
+{
+	int i = findText(panelName);
+	if( i != -1 )
+		setCurrentIndex( i );
 }

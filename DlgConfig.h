@@ -2,8 +2,10 @@
 #define DLGCONFIG_H
 
 #include <QDialog>
-#include <FrequencyPIRE.h>
-#include <AntennaGain.h>
+
+#include "FrequencyPIRE.h"
+#include "AntennaGain.h"
+#include "BaseStationInfo.h"
 
 namespace Ui
 {
@@ -16,17 +18,19 @@ class DlgConfig : public QDialog
 	Ui::DlgConfig *ui;
 
 public:
-	explicit DlgConfig(const QFrequencyPireList &freqPIREList, const QAntennaDataList &antDataList, quint32 freqStep, QWidget *parent = Q_NULLPTR);
+	explicit DlgConfig(const QFrequencyPireList &freqPIREList, const QAntennaDataList &antDataList, const quint32 freqStep, const QBaseStationNameMap &baseStationNameMap, QWidget *parent = Q_NULLPTR);
 	~DlgConfig();
 
     QFrequencyPireList frequencyPIREList() const;
-    quint32 frequencyStep();
+	quint32 frequencyStep()const;
     QAntennaDataList antennaDataList() const;
+	QBaseStationNameMap baseStationNameMap() const;
 
 private slots:
 	void on_btOk_clicked();
 	void on_addPIREButton_clicked();
     void on_addModelGain_clicked();
+	void on_pbAddBaseStation_clicked();
 };
 
 #endif // DLGCONFIG_H

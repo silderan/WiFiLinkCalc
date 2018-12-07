@@ -22,10 +22,14 @@ class MainWindow : public QMainWindow
 	QFrequencyPireList m_freqPIREList;
 	QAntennaDataList m_antDataList;
 	quint32 m_freqStep;
-    QBaseStationInfo m_baseStationInfo;
+	// Base Station Name Map
+	QBaseStationNameMap m_bsNameMap;
+	// Base Station info.
+	QBaseStationInfo m_bsInfo;
 
 	void loadPIREData(const QIniData &cnfgData);
 	void loadAntennaData(const QIniData &cnfgData);
+	void loadBaseStationNames(const QIniData &cnfgData);
     void loadPanelCSV();
 
 public:
@@ -41,8 +45,8 @@ private slots:
     void onNewDistance(int dist);
     void openCnfgDlg();
     void recalc();
-    void on_cbEBName_currentIndexChanged(const QString &arg1);
-    void on_cbPanelName_currentIndexChanged(const QString &arg1);
+	void onNewBaseStationSelected(QString bsID);
+	void on_cbPanelNames_currentIndexChanged(const QString &arg1);
 };
 
 #endif // MAINWINDOW_H

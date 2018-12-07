@@ -18,8 +18,8 @@ public:
 QAntennaGainTable::QAntennaGainTable(QWidget *papi) :
     QTableWidget(papi)
 {
-	setColumnCount(2);
-	setHorizontalHeaderLabels( QStringList() << "Modelo" << "Ganancia" );
+	setColumnCount(3);
+	setHorizontalHeaderLabels( QStringList() << "Modelo" << "Ganancia" << "ID" );
 }
 
 QAntennaGainTable::~QAntennaGainTable()
@@ -40,6 +40,13 @@ QString QAntennaGainTable::model(int row) const
 	return QString();
 }
 
+QString QAntennaGainTable::id(int row) const
+{
+	if( (row < rowCount()) && (row >=0) )
+		return item(row, 2)->text();
+	return model(row);
+}
+
 quint32 QAntennaGainTable::gain(const QString &modelName) const
 {
 	for( int i = 0; i < rowCount(); i++ )
@@ -48,13 +55,13 @@ quint32 QAntennaGainTable::gain(const QString &modelName) const
 	return 0;
 }
 
-void QAntennaGainTable::addRow(const QString &antenaModel, quint32 gain)
+void QAntennaGainTable::addRow(const QString &antenaModel, quint32 gain, const QString &id)
 {
 	int row = rowCount();
-	setHorizontalHeaderLabels( QStringList() << "Modelo" << "Ganancia" );
 	insertRow(row);
     setItem(row, 0, new QTableWidgetItem(antenaModel) );
 	setCellWidget(row, 1, new QGainWidget(gain) );
+	setItem(row, 2, new QTableWidgetItem(id) );
 }
 
 void QAntennaGainTable::load(const QAntennaDataList &antDataList)
@@ -70,7 +77,7 @@ QAntennaDataList QAntennaGainTable::save() const
     QAntennaDataList antDataList;
 	for( int row = 0; row < rowCount(); row++ )
         if( !model(row).isEmpty() && (gain(row) > 0) )
-            antDataList.append( model(row), gain(row) );
+			antDataList.append( model(row), gain(row), id(row) );
 
     return antDataList;
 }
