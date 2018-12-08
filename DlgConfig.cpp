@@ -4,7 +4,6 @@
 DlgConfig::DlgConfig(const QFrequencyPireList &freqPIREList,
                      const QAntennaDataList &antDataList,
 					 const quint32 freqStep,
-                     const QBaseStationMap &baseStationNameMap,
                      QWidget *parent) :
     QDialog(parent), ui(new Ui::DlgConfig)
 {
@@ -14,7 +13,6 @@ DlgConfig::DlgConfig(const QFrequencyPireList &freqPIREList,
     ui->sbSteps->setMinimum(1);
     ui->pireTable->load(freqPIREList);
     ui->gainTable->load(antDataList);
-	ui->baseStationTable->setup(baseStationNameMap);
 }
 
 DlgConfig::~DlgConfig()
@@ -35,11 +33,6 @@ quint32 DlgConfig::frequencyStep() const
 QAntennaDataList DlgConfig::antennaDataList() const
 {
 	return ui->gainTable->save();
-}
-
-QBaseStationMap DlgConfig::baseStationNameMap() const
-{
-	return ui->baseStationTable->save();
 }
 
 #include <QMessageBox>
@@ -92,9 +85,4 @@ void DlgConfig::on_addPIREButton_clicked()
 void DlgConfig::on_addModelGain_clicked()
 {
     ui->gainTable->addRow();
-}
-
-void DlgConfig::on_pbAddBaseStation_clicked()
-{
-    ui->baseStationTable->addRow();
 }

@@ -49,75 +49,32 @@ void QPanelMap::loadPanelsCSV(const QString &fname)
             if( (1 < ll[0].count()) && isalpha(ll[0][i].toLatin1()) )
             {
 				QString description = panelData[descriptionCol];
-				QString bsID = ll[0].left(i);
 				QString frequency = panelData[frequencyCol].replace(" MHz", "");
                 QString degrees = ll[1];
 				QString gain = ll[2];
 				QString power = ll[3];
                 QString ssid = panelData[ssidCol];
 
-                add( Panel(bsID, panelName, ssid, description, degrees, frequency, gain, power) );
+				add( Panel(panelName, ssid, description, degrees, frequency, gain, power) );
             }
         }
     }
 }
 
-QBaseStationTable::QBaseStationTable(QWidget *papi) :
-	QTableWidget(papi)
-{
-
-}
-
-void QBaseStationTable::addRow(const QString &id, const QString &name)
-{
-	int row = rowCount();
-
-    insertRow( row );
-    setItem( row, 0, new QTableWidgetItem(id) );
-    setItem( row, 1, new QTableWidgetItem(name) );
-}
-
-void QBaseStationTable::setup(const QBaseStationMap &bsMap)
-{
-    QBaseStationMapIterator it(bsMap);
-
-	setColumnCount(2);
-	setHorizontalHeaderLabels( QStringList() << tr("ID") << tr("Nombre") );
-	while( it.hasNext() )
-	{
-		it.next();
-        addRow(it.value().m_id, it.value().m_name);
-	}
-}
-
-QBaseStationMap QBaseStationTable::save() const
-{
-    QBaseStationMap bsm;
-
-	for( int row = 0; row < rowCount(); row++ )
-    {
-        QString id = item(row, 0)->text();
-        QString name = item(row, 1)->text();
-        if( id.isEmpty() && !name.isEmpty() )
-            bsm.add( id, name );
-    }
-
-	return bsm;
-}
 
 QPanelCB::QPanelCB(QWidget *papi) :
 	QComboBox(papi)
 {
 }
 
-void QPanelCB::selectPanel(const QString &panelID)
+void QPanelCB::selectPanel(const QString &panelName)
 {
 	for( int i = 0; i < count(); i++ )
-        if( itemData(i, ID).toString() == panelID )
+		if( itemData(i, Name).toString() == panelName )
 			setCurrentIndex(i);
 }
 
-void QPanelCB::setup(const QPanelMap &panelMap, const QBaseStationMap bsMap, const QString &newBaseStationID)
+void QPanelCB::setup(const QPanelMap &panelMap, const QString &newPanelName)
 {
 	blockSignals(true);
 	clear();
@@ -125,10 +82,8 @@ void QPanelCB::setup(const QPanelMap &panelMap, const QBaseStationMap bsMap, con
     for( int i = 0; it.hasNext(); i++ )
     {
         it.next();
-        BaseStation bs = bsMap[it.value().m_bsID];
-        QString visibleName = QString("%1\t(%2)").arg(it.value().m_ssid, it.value().m_description);
+		QString visibleName = QString("%1    (%2)").arg(it.value().m_ssid, it.value().m_description);
         addItem( visibleName );
-        setItemData( i, it.value().m_bsID, ID );
         setItemData( i, it.value().m_degrees, Degrees );
         setItemData( i, it.value().m_description, Description );
         setItemData( i, it.value().m_freq, Frequency );
@@ -138,8 +93,8 @@ void QPanelCB::setup(const QPanelMap &panelMap, const QBaseStationMap bsMap, con
         setItemData( i, it.value().m_ssid, SSID );
     }
 	blockSignals(false);
-	if( !newBaseStationID.isEmpty() )
-        selectPanel(newBaseStationID);
+	if( !newPanelName.isEmpty() )
+		selectPanel(newPanelName);
 	else
         emit currentIndexChanged(currentIndex());
 }
