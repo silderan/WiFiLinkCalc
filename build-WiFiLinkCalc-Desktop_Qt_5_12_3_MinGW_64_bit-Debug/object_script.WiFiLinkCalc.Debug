@@ -1,0 +1,12 @@
+debug/main.o
+debug/mainwindow.o
+debug/QIniFile.o
+debug/DlgConfig.o
+debug/QAntennaGainCB.o
+debug/QAntennaGainTable.o
+debug/QFrequencyCB.o
+debug/QFrequencyTable.o
+debug/moc_mainwindow.o
+debug/moc_DlgConfig.o
+debug/moc_AntennaGain.o
+debug/moc_FrequencyPIRE.o
