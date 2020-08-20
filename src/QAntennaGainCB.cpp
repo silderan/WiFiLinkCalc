@@ -19,9 +19,9 @@ void QAntennaGainCB::setup(const QAntennaDataList &antDataList)
     for( int i = 0; i < antDataList.count(); i++ )
         addItem(antDataList[i].modelName(), antDataList[i].gain());
 
-    selectAntenaModel(oldModel);
-    if( (currentIndex() == -1) && count() )
-        setCurrentIndex(0);
+	selectAntenaModel(oldModel);
+	if( (currentIndex() == -1) && count() )
+		setCurrentIndex(0);
 	blockSignals(false);
 	if( currentIndex() != -1 )
 		onIndexChanged(currentIndex());

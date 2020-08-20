@@ -13,9 +13,9 @@ void QFrequencyComboBox::setup(const QFrequencyPireList &freqPIREList, quint32 f
         for( quint32 frequency = freqPIREList[i].initialFrequency(); frequency <= freqPIREList[i].endFrequency(); frequency += frequencyStep )
             addItem( QString("%1").arg(frequency), freqPIREList[i].frequencyPIRE() );
     }
-    selectFrequency(frequencySelected);
-    if( (currentIndex() == -1) && count() )
-        setCurrentIndex(0);
+	selectFrequency(frequencySelected);
+	if( (currentIndex() == -1) && count() )
+		setCurrentIndex(0);
 	blockSignals(false);
 	if( currentIndex() != -1 )
 		onNewFreqSelected(currentIndex());

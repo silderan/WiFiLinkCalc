@@ -101,7 +101,9 @@ void MainWindow::loadAll()
 	}
 
 	ui->cbFrecuencia->setCurrentFrequency( userData[KEY_CURFR] );
+	ui->cbAPModel->selectAntenaModel( userData[KEY_APMODL] );
 	ui->sbAPGain->setValue( userData[KEY_APGAIN].toInt() );
+	ui->cbClModel->selectAntenaModel( userData[KEY_CLMODL] );
 	ui->sbClGain->setValue( userData[KEY_CLGAIN].toInt() );
 	ui->sbPIRE->setValue( userData[KEY_PIRE].toInt() );
 	ui->sbDistance->setValue( userData[KEY_DIST].toInt() );
@@ -115,7 +117,7 @@ void MainWindow::loadPIREData(const QIniData &cnfgData)
 	m_freqPIREList.clear();
 	for( int line = 1; !(frequencyPIREDataString = cnfgData[ KEY_FREQ(line) ]).isEmpty(); line++ )
     {
-        QStringList freqPIREDataStringList = frequencyPIREDataString.split(',', QString::SkipEmptyParts);
+		QStringList freqPIREDataStringList = frequencyPIREDataString.split(',', Qt::SkipEmptyParts);
         FrequencyPire frequencyPIREData;
 
         if( freqPIREDataStringList.count() != 3 )
@@ -164,7 +166,7 @@ void MainWindow::loadAntennaData(const QIniData &cnfgData)
 	m_antDataList.clear();
 	for( int line = 1; !(antennaDataString = cnfgData[ KEY_ANT(line) ]).isEmpty(); line++ )
     {
-        QStringList antennaDataStringList = antennaDataString.split(',', QString::SkipEmptyParts);
+		QStringList antennaDataStringList = antennaDataString.split(',', Qt::SkipEmptyParts);
         AntennaData antennaData;
 
         if( antennaDataStringList.count() != 2 )
